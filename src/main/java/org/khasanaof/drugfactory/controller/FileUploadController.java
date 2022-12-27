@@ -1,6 +1,9 @@
 package org.khasanaof.drugfactory.controller;
 
-import org.khasanaof.drugfactory.service.FileUploadService;
+import org.khasanaof.drugfactory.domain.upload.UploadEntity;
+import org.khasanaof.drugfactory.response.Data;
+import org.khasanaof.drugfactory.service.upload.FileUploadService;
+import org.khasanaof.drugfactory.service.upload.SimpleFileUploadService;
 import org.khasanaof.drugfactory.utils.BaseUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -26,13 +29,13 @@ public class FileUploadController {
 
     private final FileUploadService service;
 
-    public FileUploadController(FileUploadService service) {
+    public FileUploadController(SimpleFileUploadService service) {
         this.service = service;
     }
 
     @RequestMapping(value = "upload", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> upload(@RequestParam("file") MultipartFile file) {
-        return new ResponseEntity<>(service.save(file), HttpStatus.OK);
+    public ResponseEntity<Data<UploadEntity>> upload(@RequestParam("file") MultipartFile file) {
+        return new ResponseEntity<>(new Data<>(service.save(file)), HttpStatus.OK);
     }
 
 }

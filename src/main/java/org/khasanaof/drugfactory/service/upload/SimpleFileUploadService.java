@@ -1,5 +1,6 @@
-package org.khasanaof.drugfactory.service;
+package org.khasanaof.drugfactory.service.upload;
 
+import org.khasanaof.drugfactory.domain.upload.UploadEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,22 +20,28 @@ import java.nio.file.StandardCopyOption;
  * Package: org.khasanaof.drugfactory.service
  */
 @Service
-public class FileUploadService {
+public class SimpleFileUploadService implements FileUploadService {
 
-    private final String SHORT_PATH = "src/main/resources";
-    private final String DATA_PATH = "data/";
+    private final String SHORT_PATH = "src/main/resources/data/";
     private final String ABSOLUTE_PATH = "D:\\Nurislom\\Projects\\DrugFactory\\src\\main\\resources";
 
-    public String save(MultipartFile file) {
+    @Override
+    public UploadEntity save(MultipartFile file) {
         try {
             String org_name = file.getOriginalFilename();
             String extension = StringUtils.getFilenameExtension(org_name);
             String generatedName = System.currentTimeMillis() + "." + extension;
-            Files.copy(file.getInputStream(), Paths.get(SHORT_PATH, generatedName), StandardCopyOption.REPLACE_EXISTING);
-            return DATA_PATH + generatedName;
+            Files.copy(file.getInputStream(), Paths.get(SHORT_PATH, generatedName),
+                    StandardCopyOption.REPLACE_EXISTING);
+            return returnEntity(file, extension, generatedName);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private UploadEntity returnEntity(MultipartFile file, String extension, String generatedName) {
+        return new UploadEntity(file.getOriginalFilename(), generatedName,
+                SHORT_PATH + generatedName, extension);
     }
 
 }
